@@ -1,0 +1,961 @@
+/* =========================================================
+   Slideshow Builder — styles.css
+   =========================================================
+
+   This file controls the complete appearance of the project.
+
+   Main responsibilities:
+   1. Set color theme using CSS variables
+   2. Create layout for page 1, 2, and 3
+   3. Style buttons, cards, tables, image cells, and slideshow
+   4. Add hover effects and animations
+   5. Show drag-and-drop visual feedback
+   6. Support Edit UI mode styling
+   7. Support responsive layout for smaller devices
+   ========================================================= */
+
+
+
+/* =========================================================
+   UNIVERSAL RESET
+   =========================================================
+
+   Apply border-box sizing to all elements.
+
+   Why needed:
+   Makes width and height calculations more predictable.
+*/
+* {
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   HTML AND BODY HEIGHT
+   =========================================================
+
+   Full page height is needed because each logical page
+   occupies full viewport height.
+*/
+html, body {
+  height: 100%;
+}
+
+
+
+/* =========================================================
+   ROOT VARIABLES
+   =========================================================
+
+   These are reusable color and size variables.
+
+   Why useful:
+   - keeps style organized
+   - avoids repeating values
+   - allows easy theme modification
+*/
+:root{
+  --bg1: #f6fbff;                         /* light blue background tone */
+  --bg2: #fff6fb;                         /* light pink background tone */
+  --card: rgba(255,255,255,.86);          /* translucent white card */
+  --card2: rgba(255,255,255,.74);         /* lighter card layer */
+  --border: rgba(20,40,60,.14);           /* light border */
+  --border2: rgba(20,40,60,.22);          /* darker border for emphasis */
+  --text: #1d2b3a;                        /* main text color */
+  --muted:#5c6b7a;                        /* softer secondary text */
+  --accent: #3b82f6;                      /* main blue accent */
+  --accent2:#60a5fa;                      /* lighter blue accent */
+  --pink:#ff66b2;                         /* pink accent */
+  --danger:#ef4444;                       /* red danger color */
+  --shadow: 0 12px 34px rgba(16,24,40,.12);   /* normal card shadow */
+  --shadow2: 0 22px 55px rgba(16,24,40,.16);  /* stronger shadow */
+  --radius: 18px;                         /* normal rounding */
+  --radius2: 22px;                        /* stronger rounding */
+  --t: 160ms;                             /* small transition time */
+  --t2: 220ms;                            /* medium transition time */
+}
+
+
+
+/* =========================================================
+   BODY STYLING
+   =========================================================
+
+   Creates the global animated pastel background
+   and sets overall typography.
+*/
+body{
+  margin:0; /* remove default browser margin */
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; /* readable modern font family */
+  color: var(--text); /* default text color */
+
+  /* Layered gradient background for premium UI look */
+  background:
+    radial-gradient(1200px 700px at 15% 15%, rgba(255,182,213,.40), transparent 55%),
+    radial-gradient(1100px 800px at 85% 25%, rgba(150,206,255,.38), transparent 58%),
+    radial-gradient(900px  700px at 55% 85%, rgba(255,214,165,.30), transparent 58%),
+    linear-gradient(135deg, var(--bg1), var(--bg2));
+
+  background-attachment: fixed; /* fixed background gives smooth feel */
+  overflow:hidden; /* prevent unwanted scroll on desktop layout */
+}
+
+
+/* =========================================================
+   BODY BEFORE PSEUDO-ELEMENT
+   =========================================================
+
+   Adds floating glow effects above background.
+*/
+body::before{
+  content:"";
+  position:fixed;
+  inset:-30%;
+  pointer-events:none;
+
+  background:
+    radial-gradient(closest-side at 20% 20%, rgba(59,130,246,.14), transparent 62%),
+    radial-gradient(closest-side at 80% 30%, rgba(255,102,178,.14), transparent 62%),
+    radial-gradient(closest-side at 50% 80%, rgba(255,200,120,.12), transparent 62%);
+
+  filter:blur(18px);
+  opacity:.9;
+  animation:bgFloat 10s ease-in-out infinite alternate;
+  z-index:0;
+}
+
+
+/* =========================================================
+   BODY AFTER PSEUDO-ELEMENT
+   =========================================================
+
+   Adds dotted moving decorative layer.
+*/
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background: radial-gradient(circle at 10px 10px, rgba(255,255,255,.45) 1.5px, transparent 2.6px) 0 0 / 42px 42px;
+  opacity:.18;
+  animation:bgDrift 18s linear infinite;
+  z-index:0;
+}
+
+
+/* Floating animation for glowing background */
+@keyframes bgFloat{
+  0%  { transform:translate3d(-2%,-1%,0) scale(1); }
+  100%{ transform:translate3d(2%,1%,0) scale(1.04); }
+}
+
+
+/* Drift animation for dot pattern */
+@keyframes bgDrift{
+  0%  { background-position:0 0; }
+  100%{ background-position:240px 180px; }
+}
+
+
+
+/* =========================================================
+   GENERIC VISIBILITY HELPERS
+   ========================================================= */
+
+/* Hides an element forcefully */
+.hidden{
+  display:none !important;
+}
+
+
+/* All main pages should fill full viewport */
+#page1,
+#page2,
+#page3{
+  position:relative;
+  z-index:1;
+  height:100vh;
+}
+
+
+
+/* =========================================================
+   BUTTON STYLING
+   =========================================================
+
+   Base button style shared by all buttons.
+*/
+.btn{
+  padding:10px 14px;
+  border-radius:14px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.90);
+  cursor:pointer;
+  user-select:none;
+  box-shadow:0 8px 18px rgba(16,24,40,.10);
+  transition:
+    transform var(--t) ease,
+    box-shadow var(--t2) ease,
+    filter var(--t) ease,
+    border-color var(--t) ease;
+  position:relative;
+  overflow:hidden;
+}
+
+
+/* Hover effect for buttons */
+.btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 14px 28px rgba(16,24,40,.14);
+  border-color:var(--border2);
+}
+
+
+/* Active pressed effect */
+.btn:active{
+  transform:translateY(0) scale(.99);
+}
+
+
+/* Primary important button */
+.btn.primary{
+  color:#fff;
+  border-color:rgba(59,130,246,.40);
+  background:linear-gradient(135deg,rgba(96,165,250,1),rgba(59,130,246,1));
+}
+
+
+/* Decorative glow layer on primary button */
+.btn.primary::after{
+  content:"";
+  position:absolute;
+  inset:-40%;
+  background:radial-gradient(circle,rgba(255,255,255,.35),transparent 60%);
+  transform:translateX(-30%);
+  opacity:.65;
+  animation:btnGlow 2.6s ease-in-out infinite alternate;
+}
+
+
+/* Glow movement animation */
+@keyframes btnGlow{
+  0%  { transform:translateX(-20%) rotate(0deg); }
+  100%{ transform:translateX(20%) rotate(12deg); }
+}
+
+
+/* Danger button style */
+.btn.danger{
+  color:#fff;
+  border-color:rgba(239,68,68,.40);
+  background:linear-gradient(135deg,rgba(255,130,130,1),rgba(239,68,68,1));
+}
+
+
+/* Disabled button style */
+.btn:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+  transform:none;
+}
+
+
+
+/* =========================================================
+   COMMON TEXT / FLEX HELPERS
+   ========================================================= */
+
+/* Horizontal group of buttons/controls */
+.actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+
+
+/* Main title */
+.title{
+  margin:0;
+  letter-spacing:.2px;
+}
+
+
+/* Subtitle */
+.subtitle{
+  margin:6px 0 0;
+  color:var(--muted);
+}
+
+
+/* Smaller section title */
+.section-title{
+  margin:0 0 10px;
+  font-size:16px;
+  color:var(--text);
+}
+
+
+
+/* =========================================================
+   PAGE 1 LAYOUT
+   ========================================================= */
+
+/* Page 1 has two-column layout */
+#page1{
+  display:grid;
+  grid-template-columns:420px 1fr;
+}
+
+
+/* Left panel of page 1 */
+.left{
+  background:var(--card);
+  backdrop-filter:blur(10px);
+  border-right:1px solid var(--border);
+  box-shadow:var(--shadow2);
+  border-radius:0 var(--radius2) var(--radius2) 0;
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+}
+
+
+/* Page 1 header area */
+.panel-header{
+  padding:14px 16px;
+  border-bottom:1px solid var(--border);
+  background:var(--card2);
+}
+
+
+/* Vertical button panel on page 1 */
+.actions-col{
+  padding:14px 16px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  border-bottom:1px solid var(--border);
+  background:rgba(255,255,255,.55);
+}
+
+
+/* Right decorative hero area */
+.right-hero{
+  background:
+    radial-gradient(800px 600px at 60% 40%, rgba(150,206,255,.35), transparent 60%),
+    radial-gradient(600px 500px at 30% 70%, rgba(255,182,213,.30), transparent 55%),
+    radial-gradient(400px 400px at 80% 80%, rgba(255,214,165,.25), transparent 55%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+
+
+/* =========================================================
+   PAGE 2 LAYOUT
+   ========================================================= */
+
+/* Page 2 structure: topbar + builder area */
+#page2{
+  display:grid;
+  grid-template-rows:auto 1fr;
+}
+
+
+/* Top toolbar of page 2 */
+.topbar{
+  padding:14px 18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid var(--border);
+  background:var(--card2);
+  backdrop-filter:blur(10px);
+}
+
+
+/* Main two-column builder area */
+.builder{
+  padding:16px;
+  height:calc(100vh - 64px);
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+  min-height:0;
+}
+
+
+/* Generic card design */
+.card{
+  background:var(--card);
+  backdrop-filter:blur(10px);
+  border:1px solid var(--border);
+  box-shadow:var(--shadow);
+  border-radius:var(--radius2);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  min-width:0;
+  transform:translateZ(0);
+  animation:cardIn 420ms ease both;
+}
+
+
+/* Card entrance animation */
+@keyframes cardIn{
+  from{ opacity:0; transform:translateY(8px) scale(.99); }
+  to  { opacity:1; transform:translateY(0) scale(1); }
+}
+
+
+/* Card header */
+.card-head{
+  padding:12px 14px;
+  border-bottom:1px solid var(--border);
+  background:rgba(255,255,255,.68);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+
+/* Small pill badge */
+.badge{
+  font-size:12px;
+  color:var(--muted);
+  padding:4px 10px;
+  border-radius:999px;
+  border:1px solid rgba(59,130,246,.18);
+  background:rgba(59,130,246,.08);
+}
+
+
+/* Album drop zone takes available vertical space */
+.album-drop-zone{
+  flex:1;
+  min-height:52vh;
+  display:flex;
+  flex-direction:column;
+}
+
+
+/* Hint message box */
+.drop-hint{
+  margin:12px;
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px dashed rgba(59,130,246,.35);
+  background:rgba(255,102,178,.10);
+  color:#1b3a66;
+  animation:hintPulse 1.8s ease-in-out infinite alternate;
+}
+
+
+/* Hint animation */
+@keyframes hintPulse{
+  0%  { transform:translateY(0); opacity:.92; }
+  100%{ transform:translateY(-2px); opacity:1; }
+}
+
+
+/* Album bottom actions area */
+.album-actions{
+  padding:12px;
+  border-top:1px solid var(--border);
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  background:rgba(255,255,255,.60);
+}
+
+
+
+/* =========================================================
+   TABLE WRAPPER AND SCROLLBAR
+   ========================================================= */
+
+/* Shared scrollable table wrapper */
+.table-wrap{
+  padding:14px;
+  overflow:auto;
+  flex:1;
+  min-height:0;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(59,130,246,.35) rgba(255,255,255,.55);
+}
+
+
+/* WebKit scrollbar width */
+.table-wrap::-webkit-scrollbar{
+  width:10px;
+  height:10px;
+}
+
+
+/* WebKit scrollbar thumb */
+.table-wrap::-webkit-scrollbar-thumb{
+  background:rgba(59,130,246,.35);
+  border-radius:999px;
+  border:2px solid rgba(255,255,255,.65);
+}
+
+
+/* WebKit scrollbar track */
+.table-wrap::-webkit-scrollbar-track{
+  background:rgba(255,255,255,.55);
+  border-radius:999px;
+}
+
+
+/* Generic table style */
+table{
+  width:100%;
+  table-layout:fixed;
+  border-spacing:12px;
+}
+
+
+
+/* =========================================================
+   TABLE CELL STYLE
+   ========================================================= */
+
+/* Generic image cell */
+td{
+  height:98px;
+  border-radius:18px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.92);
+  overflow:hidden;
+  position:relative;
+  cursor:pointer;
+  box-shadow:0 10px 22px rgba(16,24,40,.10);
+  transition:
+    transform var(--t) ease,
+    box-shadow var(--t2) ease,
+    border-color var(--t) ease,
+    filter var(--t) ease;
+  will-change:transform;
+}
+
+
+/* Hover effect on cells */
+td:hover{
+  transform:translateY(-2px);
+  box-shadow:0 16px 34px rgba(16,24,40,.14);
+  border-color:var(--border2);
+}
+
+
+/* Empty filler cell */
+td.empty{
+  opacity:.22;
+  cursor:default;
+  background:transparent;
+  box-shadow:none;
+  border:1px dashed rgba(20,40,60,.12);
+}
+
+
+/* Thumbnail image */
+.thumb{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  user-select:none;
+  -webkit-user-drag:none;
+  transform:scale(1);
+  transition:transform 240ms ease, filter 240ms ease;
+}
+
+
+/* Slight zoom on image hover */
+td:hover .thumb{
+  transform:scale(1.03);
+  filter:saturate(1.04);
+}
+
+
+
+/* =========================================================
+   SPECIAL CELL STATES
+   ========================================================= */
+
+/* Selected album slot */
+td.selected{
+  border-color:rgba(59,130,246,.70);
+  outline:3px solid rgba(59,130,246,.22);
+  outline-offset:-3px;
+  box-shadow:0 18px 40px rgba(59,130,246,.16);
+}
+
+
+/* Empty slot in album */
+td.slot-empty{
+  cursor:pointer;
+  background:
+    radial-gradient(120px 80px at 30% 30%, rgba(255,102,178,.18), transparent 60%),
+    radial-gradient(120px 80px at 70% 70%, rgba(59,130,246,.14), transparent 60%),
+    rgba(255,255,255,.75);
+  border:2px dashed rgba(255,102,178,.38);
+  box-shadow:none;
+  animation:slotBreathe 2.4s ease-in-out infinite alternate;
+}
+
+
+/* Breathing animation for empty slot */
+@keyframes slotBreathe{
+  0%  { filter:brightness(1); }
+  100%{ filter:brightness(1.04); }
+}
+
+
+/* Hover for empty slot */
+td.slot-empty:hover{
+  border-color:rgba(59,130,246,.60);
+}
+
+
+/* Ready empty slots when dragging */
+td.slot-empty.drop-ready{
+  border-color:rgba(59,130,246,.90);
+  outline:4px solid rgba(59,130,246,.20);
+  outline-offset:-4px;
+}
+
+
+/* Hovered drop slot */
+td.slot-empty.drop-hover{
+  border-color:rgba(59,130,246,.95);
+  outline:5px solid rgba(59,130,246,.32);
+  outline-offset:-5px;
+  animation:dropPulse 520ms ease-in-out infinite alternate;
+}
+
+
+/* Drop pulse animation */
+@keyframes dropPulse{
+  from{ transform:translateY(-1px) scale(1.00); }
+  to  { transform:translateY(-2px) scale(1.01); }
+}
+
+
+/* General drop target style */
+td.drop-target{
+  border-color:rgba(59,130,246,.85);
+  outline:4px solid rgba(59,130,246,.35);
+  outline-offset:-4px;
+}
+
+
+/* Source cell while dragging */
+.dragging-source{
+  opacity:.45;
+  filter:saturate(.9) blur(.2px);
+  transform:scale(.985);
+  outline:3px solid rgba(255,102,178,.30);
+  outline-offset:-3px;
+}
+
+
+
+/* =========================================================
+   DRAG GHOST
+   =========================================================
+
+   Floating preview image shown while dragging.
+*/
+#dragGhost{
+  position:fixed;
+  left:0;
+  top:0;
+  width:160px;
+  height:112px;
+  border-radius:18px;
+  border:2px solid rgba(59,130,246,.55);
+  box-shadow:0 22px 55px rgba(16,24,40,.22);
+  background:rgba(255,255,255,.88);
+  overflow:hidden;
+  z-index:9999;
+  pointer-events:none;
+  transform:translate3d(-9999px,-9999px,0);
+}
+
+
+/* Drag ghost image */
+#dragGhost img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+
+
+/* =========================================================
+   PAGE 3 SLIDESHOW
+   ========================================================= */
+
+/* Center slideshow card on page 3 */
+#page3{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+}
+
+
+/* Main slideshow card */
+.slideshow{
+  width:min(1200px,98%);
+  height:min(86vh,860px);
+  background:var(--card);
+  backdrop-filter:blur(10px);
+  border:1px solid var(--border);
+  box-shadow:var(--shadow2);
+  border-radius:var(--radius2);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  animation:ssIn 420ms ease both;
+}
+
+
+/* Slideshow card entrance animation */
+@keyframes ssIn{
+  from{ opacity:0; transform:translateY(10px) scale(.99); }
+  to  { opacity:1; transform:translateY(0) scale(1); }
+}
+
+
+/* Top toolbar of slideshow */
+.slideshow-top{
+  padding:10px 12px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid var(--border);
+  background:rgba(255,255,255,.68);
+}
+
+
+/* Slide counter */
+.counter{
+  font-weight:700;
+  color:var(--muted);
+}
+
+
+/* Delay input wrapper */
+.delay-ui{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:var(--muted);
+}
+
+
+/* Delay input field */
+#delayInput{
+  width:180px;
+  padding:9px 10px;
+  border-radius:12px;
+  border:1px solid rgba(20,40,60,.22);
+  outline:none;
+  background:rgba(255,255,255,.92);
+  transition:box-shadow var(--t2) ease, border-color var(--t) ease;
+}
+
+
+/* Input focus style */
+#delayInput:focus{
+  border-color:rgba(59,130,246,.65);
+  box-shadow:0 0 0 5px rgba(59,130,246,.18);
+}
+
+
+/* Main slideshow image stage */
+.slideshow-stage{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:14px;
+  position:relative;
+}
+
+
+/* Decorative glow layer inside slideshow stage */
+.slideshow-stage::before{
+  content:"";
+  position:absolute;
+  inset:12px;
+  border-radius:18px;
+  border:1px solid rgba(59,130,246,.18);
+  background:
+    radial-gradient(420px 260px at 20% 20%, rgba(255,102,178,.14), transparent 60%),
+    radial-gradient(420px 260px at 80% 30%, rgba(59,130,246,.12), transparent 60%);
+  opacity:.7;
+  pointer-events:none;
+  animation:stageGlow 5.6s ease-in-out infinite alternate;
+}
+
+
+/* Glow animation */
+@keyframes stageGlow{
+  0%  { opacity:.55; }
+  100%{ opacity:.85; }
+}
+
+
+/* Slideshow image */
+.slideshow-stage img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  border-radius:18px;
+  border:1px solid rgba(20,40,60,.12);
+  background:rgba(255,255,255,.90);
+  box-shadow:0 16px 40px rgba(16,24,40,.14);
+  animation:ssImgPop 360ms ease both;
+}
+
+
+/* Image pop-in animation */
+@keyframes ssImgPop{
+  from{ transform:scale(.992); opacity:.80; }
+  to  { transform:scale(1); opacity:1; }
+}
+
+
+
+/* =========================================================
+   RESPONSIVE DESIGN
+   =========================================================
+
+   When screen width becomes smaller,
+   layouts change to remain usable.
+*/
+@media (max-width:980px){
+
+  /* Page 1 becomes single-column */
+  #page1{
+    grid-template-columns:1fr;
+  }
+
+  /* Remove special rounding when stacked */
+  .left{
+    border-radius:0;
+  }
+
+  /* Hide decorative hero to save space */
+  .right-hero{
+    display:none;
+  }
+
+  /* Stack page 2 cards vertically */
+  .builder{
+    grid-template-columns:1fr;
+    height:auto;
+  }
+
+  /* Allow scrolling on small screens */
+  body{
+    overflow:auto;
+  }
+}
+
+
+/* =========================================================
+   REDUCED MOTION ACCESSIBILITY
+   =========================================================
+
+   If user prefers reduced motion,
+   disable most animations and transitions.
+*/
+@media (prefers-reduced-motion:reduce){
+  *{
+    animation:none !important;
+    transition:none !important;
+  }
+}
+
+
+
+/* =============================================================
+   EDIT UI MODE STYLING
+   =============================================================
+
+   These styles are used when user turns on UI editing.
+   Buttons become movable/resizable visually.
+   ============================================================= */
+
+/* Disable text selection while dragging/resizing */
+body.noselect {
+  -webkit-user-select:none;
+  user-select:none;
+}
+
+
+/* Show dashed outline on normal buttons in edit mode */
+body.ui-editing .btn:not(.btn-edit-ui):not(.btn-apply-ui):not(.btn-save-ui-json):not(.btn-load-ui-json){
+  border: 2px dashed #3b82f6 !important;
+  cursor: grab !important;
+}
+
+
+/* Cursor while actively dragging */
+body.ui-editing .btn:not(.btn-edit-ui):not(.btn-apply-ui):not(.btn-save-ui-json):not(.btn-load-ui-json):active{
+  cursor: grabbing !important;
+}
+
+
+/* Active style for Edit UI button itself */
+body.ui-editing .btn-edit-ui {
+  color: #fff !important;
+  background: linear-gradient(135deg,#60a5fa,#3b82f6) !important;
+  border-color: rgba(59,130,246,.55) !important;
+}
+
+
+/* Resize handle shown on movable buttons */
+.ui-rh {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  background: rgba(59,130,246,.35);
+  border: 1.5px solid rgba(59,130,246,.75);
+  cursor: nwse-resize;
+  display: none;
+  z-index: 1;
+  pointer-events: auto;
+}
+
+
+/* Show resize handle in edit mode */
+body.ui-editing .btn:not(.btn-edit-ui):not(.btn-apply-ui):not(.btn-save-ui-json):not(.btn-load-ui-json) .ui-rh {
+  display: block;
+}
+
+
+/* Save UI and Load UI buttons special styling */
+.btn-save-ui-json,
+.btn-load-ui-json {
+  background: rgba(255,255,255,.90);
+  border-color: rgba(245,158,11,.40);
+  color: #92400e;
+}
+
+
+/* Hover style for Save UI and Load UI buttons */
+.btn-save-ui-json:hover,
+.btn-load-ui-json:hover {
+  border-color: rgba(245,158,11,.70);
+  background: rgba(255,251,235,.95);
+}

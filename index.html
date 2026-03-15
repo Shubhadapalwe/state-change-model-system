@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<!--
+  =====================================================================
+  PROJECT NAME : Slideshow Builder
+  FILE NAME    : index.html
+  FILE TYPE    : HTML (HyperText Markup Language)
+  =====================================================================
+
+  PURPOSE OF THIS FILE
+  --------------------
+  This file is the structural foundation of the complete project.
+
+  In simple words:
+  This file creates the full skeleton of the application.
+
+  It defines:
+  1. The 3 logical pages of the application
+  2. The buttons the user clicks
+  3. The tables where images are shown
+  4. The input controls used for loading files
+  5. The slideshow screen structure
+
+  IMPORTANT IDEA
+  --------------
+  This project behaves like a multi-page application,
+  but actually all the pages are inside a single HTML file.
+
+  JavaScript will:
+  - show one section
+  - hide the remaining sections
+
+  Therefore, this HTML file contains all screens together.
+
+  PAGES PRESENT IN THIS FILE
+  --------------------------
+  PAGE 1 : Load images and preview them
+  PAGE 2 : Build album with drag-and-drop
+  PAGE 3 : Play slideshow
+
+  WHY THIS DESIGN IS GOOD
+  -----------------------
+  1. Faster navigation
+  2. No full page reload
+  3. Easier state management
+  4. Smooth user experience
+  =====================================================================
+-->
+<html lang="en">
+<head>
+
+  <!--
+    This meta tag defines the character encoding.
+
+    Why needed:
+    It ensures correct display of normal letters, symbols,
+    arrows, punctuation, and special characters.
+  -->
+  <meta charset="UTF-8" />
+
+  <!--
+    This meta tag controls how the page behaves on different devices.
+
+    Why needed:
+    Without this, layout can break on smaller screens.
+
+    width=device-width:
+    means use actual device width.
+
+    initial-scale=1.0:
+    means initial zoom level is normal.
+  -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <!--
+    This title appears in the browser tab.
+  -->
+  <title>Slideshow Builder</title>
+
+  <!--
+    This line connects the HTML file with the external CSS file.
+
+    Why needed:
+    CSS is responsible for visual design.
+    Without this file, only plain unstyled HTML would appear.
+  -->
+  <link rel="stylesheet" href="styles.css" />
+
+  <!--
+    This line includes the jQuery library.
+
+    Why needed:
+    The JavaScript file of this project uses jQuery heavily for:
+    - selecting elements
+    - attaching events
+    - updating DOM
+    - changing classes
+    - drag/drop related interface handling
+
+    Therefore, this library must load before app.js executes.
+  -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+
+  <!-- ============================================================= -->
+  <!-- PAGE 1 : IMAGE LOADING AND PREVIEW PAGE                       -->
+  <!-- ============================================================= -->
+
+  <!--
+    This section represents PAGE 1 of the application.
+
+    Why id="page1" is important:
+    JavaScript uses this id to show/hide this page.
+
+    This page is the starting page of the application.
+  -->
+  <section id="page1">
+
+    <!--
+      This div forms the left side content panel of page 1.
+
+      It contains:
+      - heading
+      - action buttons
+      - preview table
+    -->
+    <div class="left">
+
+      <!--
+        This is the top heading area of page 1.
+
+        It provides:
+        - project title
+        - short flow explanation
+      -->
+      <div class="panel-header">
+
+        <!-- Main project title -->
+        <h2 class="title">Slideshow Builder</h2>
+
+        <!--
+          Subtitle line.
+
+          It tells the user the basic working sequence:
+          1. Pick images
+          2. Build album
+          3. Play slideshow
+        -->
+        <p class="subtitle">Pick images → Build Album → Play slideshow</p>
+      </div>
+
+      <!--
+        This is the main action button area of page 1.
+
+        Class meaning:
+        - actions-col : styled vertical button group
+        - ui-zone     : region allowed for Edit UI customization
+
+        data-ui-zone:
+        gives semantic identification of this specific edit zone.
+      -->
+      <div class="actions-col ui-zone" data-ui-zone="page1-actions">
+
+        <!--
+          Hidden file input for image selection.
+
+          Why hidden:
+          Normal browser file inputs are not visually attractive.
+          So we trigger them through button click from JavaScript.
+
+          multiple:
+          allows selection of multiple image files together.
+
+          accept="image/*":
+          restricts selection to image files.
+        -->
+        <input id="filePicker" type="file" accept="image/*" multiple hidden />
+
+        <!--
+          Hidden file input for slideshow JSON loading.
+
+          Purpose:
+          To restore a previously saved slideshow project.
+
+          accept=".json,application/json":
+          only JSON-like file types are expected.
+        -->
+        <input id="jsonPicker" type="file" accept=".json,application/json" hidden />
+
+        <!--
+          Button: Load Images
+
+          JavaScript uses this id to attach click behavior.
+          When clicked, hidden image file input opens.
+        -->
+        <button id="btnLoadImages" class="btn primary">Load Images</button>
+
+        <!--
+          Button: Load Slideshow JSON
+
+          Purpose:
+          Restore saved slideshow data from a JSON file.
+        -->
+        <button id="btnLoadJson" class="btn">Load Slideshow (JSON)</button>
+
+        <!--
+          Button: Open customized album builder
+
+          Purpose:
+          Move user to PAGE 2 for drag-drop arrangement.
+        -->
+        <button id="btnCustomize" class="btn">Customized (Album Builder)</button>
+
+        <!--
+          Button: Direct slideshow
+
+          Purpose:
+          Create slideshow immediately using all currently loaded images.
+        -->
+        <button id="btnMakeSlideshowFromP1" class="btn">Make Slideshow</button>
+      </div>
+
+      <!--
+        This wrapper contains the preview table for currently loaded images.
+
+        Why wrapper is useful:
+        It provides padding, scroll behavior, and neat layout.
+      -->
+      <div class="table-wrap">
+
+        <!-- Small section heading -->
+        <h3 class="section-title">Preview (Available)</h3>
+
+        <!--
+          This table displays the loaded images on page 1.
+
+          Important:
+          The tbody is empty in static HTML.
+          JavaScript dynamically inserts rows and cells later.
+        -->
+        <table id="availableTable_p1">
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!--
+      This right-side area is mainly decorative.
+
+      It improves the balance of the page design.
+      Without it, the right half of the screen would feel empty.
+    -->
+    <div class="right-hero"></div>
+  </section>
+
+
+
+  <!-- ============================================================= -->
+  <!-- PAGE 2 : CUSTOMIZED ALBUM BUILDER PAGE                       -->
+  <!-- ============================================================= -->
+
+  <!--
+    This section represents PAGE 2.
+
+    Main purpose of PAGE 2:
+    - show available images
+    - allow drag from available images
+    - allow drop into album slots
+    - allow album reordering
+    - allow album cleaning/removal
+    - allow slideshow generation from album
+  -->
+  <section id="page2" class="hidden">
+
+    <!--
+      Top toolbar of page 2.
+
+      Why hidden class is not here:
+      The full section itself controls page visibility.
+
+      ui-zone:
+      means the toolbar is also customizable in Edit UI mode.
+    -->
+    <div class="topbar ui-zone" data-ui-zone="page2-topbar">
+
+      <!--
+        First action group in topbar.
+        Contains navigation and image loading controls.
+      -->
+      <div class="actions">
+
+        <!-- Back to page 1 -->
+        <button id="btnBackToP1" class="btn">Back</button>
+
+        <!-- Open file picker again to add more images -->
+        <button id="btnAddMore" class="btn primary">Add More Images</button>
+      </div>
+
+      <!--
+        Second action group in topbar.
+        Contains slideshow start button.
+      -->
+      <div class="actions">
+        <button id="btnMakeSlideshow" class="btn">Make Slideshow</button>
+      </div>
+    </div>
+
+    <!--
+      Main builder container.
+
+      This area is divided into two large visual cards:
+      1. Available images card
+      2. Album card
+    -->
+    <div class="builder">
+
+      <!-- ========================================================= -->
+      <!-- LEFT CARD : AVAILABLE IMAGES                              -->
+      <!-- ========================================================= -->
+
+      <!--
+        This card shows all available images that user can drag.
+      -->
+      <div class="card">
+
+        <!-- Card header -->
+        <div class="card-head">
+
+          <!-- Heading -->
+          <h3>Available</h3>
+
+          <!-- Small instruction badge -->
+          <span class="badge">Drag from here →</span>
+        </div>
+
+        <!--
+          Scrollable wrapper for available image table.
+        -->
+        <div class="table-wrap">
+
+          <!--
+            Available table for page 2.
+
+            This table differs from page 1 preview because
+            page 2 version participates in drag-and-drop.
+          -->
+          <table id="availableTable_p2">
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+
+
+      <!-- ========================================================= -->
+      <!-- RIGHT CARD : ALBUM BUILDER                                -->
+      <!-- ========================================================= -->
+
+      <!--
+        This card represents the album construction area.
+
+        User can:
+        - drop images into blank slots
+        - reorder images
+        - select a slot
+        - remove selected item
+        - clear the full album
+      -->
+      <div class="card">
+
+        <!-- Album card header -->
+        <div class="card-head">
+          <h3>Album</h3>
+          <span class="badge">Drop into slots / reorder inside</span>
+        </div>
+
+        <!--
+          Main album drop zone.
+
+          Why id is important:
+          JavaScript uses this area for drag and drop handling.
+        -->
+        <div id="albumDropZone" class="album-drop-zone">
+
+          <!--
+            Empty album hint.
+
+            This is shown initially when album has no images.
+            Once album gets filled, JavaScript hides it.
+          -->
+          <div id="albumDropHint" class="drop-hint">
+            Drag an image from <b>Available</b> and drop into any <b>blank slot</b> 👇
+          </div>
+
+          <!-- Wrapper around album table -->
+          <div class="table-wrap album-wrap">
+
+            <!--
+              Album table.
+
+              Each logical cell corresponds to one album slot.
+              JavaScript dynamically builds rows and fills cells.
+            -->
+            <table id="albumTable">
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!--
+          Bottom album action area.
+        -->
+        <div class="album-actions">
+
+          <!--
+            Remove selected slot button.
+
+            Initially disabled because nothing is selected.
+          -->
+          <button id="btnRemoveSelectedAlbum" class="btn danger" disabled>Remove Selected</button>
+
+          <!--
+            Clear all album content button.
+
+            Initially disabled because album starts empty.
+          -->
+          <button id="btnClearAlbum" class="btn" disabled>Clear Album</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- ============================================================= -->
+  <!-- PAGE 3 : SLIDESHOW PLAYBACK PAGE                             -->
+  <!-- ============================================================= -->
+
+  <!--
+    This section represents PAGE 3.
+
+    Main purpose:
+    - display slideshow image
+    - navigate prev/next
+    - play/pause slideshow
+    - set delay
+    - show current slide counter
+    - save slideshow JSON
+  -->
+  <section id="page3" class="hidden">
+
+    <!-- Main slideshow card/container -->
+    <div class="slideshow">
+
+      <!--
+        Top action bar of slideshow page.
+
+        Two groups:
+        1. Navigation + playback buttons
+        2. Delay controls + counter
+      -->
+      <div class="slideshow-top ui-zone" data-ui-zone="page3-topbar">
+
+        <!-- Left control group -->
+        <div class="actions">
+          <button id="btnExitToAlbum" class="btn">Back</button>
+          <button id="btnPrev" class="btn">Prev</button>
+          <button id="btnPlayPause" class="btn primary">Pause</button>
+          <button id="btnNext" class="btn">Next</button>
+          <button id="btnSaveJsonP3" class="btn">Save Slideshow (JSON)</button>
+        </div>
+
+        <!-- Right control group -->
+        <div class="actions">
+
+          <!--
+            Delay control label and input.
+          -->
+          <label class="delay-ui">
+            Delay:
+            <input id="delayInput" type="text" placeholder="e.g. 0.5 sec, 1 min" />
+          </label>
+
+          <!-- Apply entered delay -->
+          <button id="btnApplyDelay" class="btn">Apply</button>
+
+          <!-- Current slideshow position counter -->
+          <span id="ssCounter" class="counter">0 / 0</span>
+        </div>
+      </div>
+
+      <!--
+        Main slideshow stage.
+
+        This is where the image currently being played is displayed.
+      -->
+      <div class="slideshow-stage">
+        <img id="ssImg" alt="Slideshow image"/>
+      </div>
+    </div>
+  </section>
+
+  <!--
+    Main JavaScript file of the project.
+
+    Why kept at end of body:
+    So all HTML elements are already loaded before JS starts using them.
+  -->
+  <script src="app.js"></script>
+</body>
+</html>
